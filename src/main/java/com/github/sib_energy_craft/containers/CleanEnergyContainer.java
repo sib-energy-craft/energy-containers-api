@@ -84,12 +84,12 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
 
     @Override
     public boolean hasEnergy() {
-        return charge.compareTo(Energy.ZERO) >= 0;
+        return charge.compareTo(Energy.ZERO) > 0;
     }
 
     @Override
     public boolean hasSpace() {
-        return getFreeSpace().compareTo(Energy.ZERO) >= 0;
+        return getFreeSpace().compareTo(Energy.ZERO) > 0;
     }
 
     @Override
