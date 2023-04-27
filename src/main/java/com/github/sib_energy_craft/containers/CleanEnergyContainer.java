@@ -94,13 +94,13 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
 
     @Override
     public synchronized void add(@NotNull Energy energy) {
-        this.charge = this.charge.add(charge).min(maxCharge);
+        this.charge = this.charge.add(energy).min(maxCharge);
     }
 
     @Override
-    public synchronized boolean subtract(@NotNull Energy energyAmount) {
-        if(this.charge.compareTo(energyAmount) >= 0) {
-            this.charge = this.charge.subtract(energyAmount);
+    public synchronized boolean subtract(@NotNull Energy energy) {
+        if(this.charge.compareTo(energy) >= 0) {
+            this.charge = this.charge.subtract(energy);
             return true;
         }
         return false;
@@ -108,7 +108,7 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
 
     /**
      * Receive energy offer<br/>
-     * In case if container has space for offered energy it accept offer and increase internal capacity.
+     * In case if container has space for offered energy it accepts offer and increase internal capacity.
      *
      * @param offer energy offer
      */
