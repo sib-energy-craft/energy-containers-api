@@ -84,7 +84,16 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
 
     @Override
     public boolean hasEnergy() {
-        return charge.compareTo(Energy.ZERO) > 0;
+        return hasAtLeast(Energy.ZERO);
+    }
+
+    /**
+     * Check is container has required amount of energy
+     * @param amount required amount
+     * @return true - required energy exists, false - otherwise
+     */
+    public boolean hasAtLeast(Energy amount) {
+        return charge.compareTo(amount) > 0;
     }
 
     @Override
