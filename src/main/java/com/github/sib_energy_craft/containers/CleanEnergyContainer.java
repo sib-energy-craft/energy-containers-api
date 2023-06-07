@@ -30,14 +30,18 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
     @Override
     public synchronized void charge(@NotNull ItemStack itemStack, @NotNull Energy max) {
         var item = itemStack.getItem();
-        if (itemStack.isEmpty() || !(item instanceof ChargeableItem chargeableItem) || !chargeableItem.hasFreeSpace(itemStack)) {
+        if (itemStack.isEmpty() ||
+                itemStack.getCount() != 1 ||
+                !(item instanceof ChargeableItem chargeableItem) ||
+                !chargeableItem.hasFreeSpace(itemStack)) {
             return;
         }
         var itemFreeSpace = Energy.of(chargeableItem.getFreeSpace(itemStack));
         var transferringEnergy = max.min(charge).min(itemFreeSpace).intValue();
 
         charge = charge.subtract(transferringEnergy);
-        chargeableItem.charge(itemStack, transferringEnergy);
+        int notUsed = chargeableItem.charge(itemStack, transferringEnergy);
+        charge = charge.add(notUsed).min(max);
     }
 
     @Override
