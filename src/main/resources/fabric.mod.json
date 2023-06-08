@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "sec-energy-containers-api",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "name": "SibEnergyCraft - Energy containers API",
   "authors": [
     "sibmaks"
@@ -12,6 +12,6 @@
   "depends": {
     "fabricloader": ">=0.14.21",
     "fabric": "*",
-    "minecraft": "1.20-rc.1"
+    "minecraft": "1.20"
   }
 }
