@@ -41,7 +41,7 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
 
         charge = charge.subtract(transferringEnergy);
         int notUsed = chargeableItem.charge(itemStack, transferringEnergy);
-        charge = charge.add(notUsed).min(max);
+        charge = charge.add(notUsed).min(maxCharge);
     }
 
     @Override
