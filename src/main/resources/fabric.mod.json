@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "sec-energy-containers-api",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "name": "SibEnergyCraft - Energy containers API",
   "authors": [
     "sibmaks"
