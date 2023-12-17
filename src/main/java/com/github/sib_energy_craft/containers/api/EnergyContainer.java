@@ -4,8 +4,8 @@ import com.github.sib_energy_craft.energy_api.Energy;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @since 0.0.1
  * @author sibmaks
+ * @since 0.0.1
  */
 public interface EnergyContainer {
 
@@ -30,7 +30,7 @@ public interface EnergyContainer {
      * @param charge charge to add
      */
     default void add(int charge) {
-        add(Energy.of(charge));
+        add(new Energy(charge));
     }
 
     /**
@@ -48,7 +48,7 @@ public interface EnergyContainer {
      * @param charge energy charge to remove
      */
     default boolean subtract(int charge) {
-        return subtract(Energy.of(charge));
+        return subtract(new Energy(charge));
     }
 
     /**

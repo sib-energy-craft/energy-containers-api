@@ -13,17 +13,21 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 
 /**
- * @since 0.0.1
  * @author sibmaks
+ * @since 0.0.1
  */
+@Getter
 public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyContainer {
-    @Getter
     private Energy charge;
-    @Getter
     private final Energy maxCharge;
 
     public CleanEnergyContainer(@NotNull Energy charge, int maxCharge) {
-        this.maxCharge = Energy.of(maxCharge);
+        this.maxCharge = new Energy(maxCharge);
+        this.charge = charge.min(this.maxCharge);
+    }
+
+    private CleanEnergyContainer(@NotNull Energy charge, Energy maxCharge) {
+        this.maxCharge = maxCharge;
         this.charge = charge.min(this.maxCharge);
     }
 
@@ -36,27 +40,27 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
                 !chargeableItem.hasFreeSpace(itemStack)) {
             return;
         }
-        var itemFreeSpace = Energy.of(chargeableItem.getFreeSpace(itemStack));
-        var transferringEnergy = max.min(charge).min(itemFreeSpace).intValue();
+        var itemFreeSpace = chargeableItem.getFreeSpace(itemStack);
+        var transferringEnergy = max.min(charge).min(itemFreeSpace);
 
         charge = charge.subtract(transferringEnergy);
-        int notUsed = chargeableItem.charge(itemStack, transferringEnergy);
+        var notUsed = chargeableItem.charge(itemStack, transferringEnergy);
         charge = charge.add(notUsed).min(maxCharge);
     }
 
     @Override
     public synchronized void discharge(@NotNull ItemStack itemStack, @NotNull Energy max) {
         var item = itemStack.getItem();
-        if(maxCharge.compareTo(charge) <= 0 ||
+        if (maxCharge.compareTo(charge) <= 0 ||
                 itemStack.isEmpty() ||
                 !(item instanceof ChargeableItem chargeableItem) ||
                 !chargeableItem.hasEnergy(itemStack)) {
             return;
         }
         var freeSpace = maxCharge.subtract(charge);
-        var itemCharge = Energy.of(chargeableItem.getCharge(itemStack));
-        var transferringEnergy = max.min(freeSpace).min(itemCharge).intValue();
-        if(chargeableItem.discharge(itemStack, transferringEnergy)) {
+        var itemCharge = chargeableItem.getCharge(itemStack);
+        var transferringEnergy = max.min(freeSpace).min(itemCharge);
+        if (chargeableItem.discharge(itemStack, transferringEnergy)) {
             charge = charge.add(transferringEnergy);
         }
     }
@@ -70,8 +74,8 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
     @NotNull
     public static CleanEnergyContainer readNbt(@NotNull NbtCompound nbt) {
         var energyAmount = new BigDecimal(nbt.getString("Charge"));
-        var charge = Energy.of(energyAmount);
-        var maxCharge = nbt.getInt("MaxCharge");
+        var charge = new Energy(energyAmount);
+        var maxCharge = Energy.readNbt("MaxCharge", nbt);
         return new CleanEnergyContainer(charge, maxCharge);
     }
 
@@ -83,7 +87,7 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
     public synchronized void writeNbt(@NotNull NbtCompound nbt) {
         var energyAmount = charge.getAmount();
         nbt.putString("Charge", energyAmount.toPlainString());
-        nbt.putInt("MaxCharge", maxCharge.intValue());
+        maxCharge.writeNbt("MaxCharge", nbt);
     }
 
     @Override
@@ -93,6 +97,7 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
 
     /**
      * Check is container has required amount of energy
+     *
      * @param amount required amount
      * @return true - required energy exists, false - otherwise
      */
@@ -112,7 +117,7 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
 
     @Override
     public synchronized boolean subtract(@NotNull Energy energy) {
-        if(this.charge.compareTo(energy) >= 0) {
+        if (this.charge.compareTo(energy) >= 0) {
             this.charge = this.charge.subtract(energy);
             return true;
         }
@@ -127,14 +132,14 @@ public class CleanEnergyContainer implements EnergyContainer, ChargeableEnergyCo
      */
     public synchronized void receiveOffer(@NotNull EnergyOffer offer) {
         var freeSpace = maxCharge.subtract(charge);
-        if(freeSpace.compareTo(Energy.ZERO) <= 0) {
+        if (freeSpace.compareTo(Energy.ZERO) <= 0) {
             return;
         }
         var energyAmount = offer.getEnergyAmount();
         if (freeSpace.compareTo(energyAmount) < 0) {
             return;
         }
-        if(offer.acceptOffer()) {
+        if (offer.acceptOffer()) {
             this.charge = this.charge.add(energyAmount).min(this.maxCharge);
         }
     }
